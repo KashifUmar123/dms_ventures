@@ -73,15 +73,13 @@ class RiderRequestsScreen extends StatelessWidget {
           SizedBox(height: 20),
           CustomButton(
             onPressed: () {
-              if (provider.riderRequestResponseModel != null) {
+              if (provider.ride != null) {
                 provider.cancelRequest(context);
               } else {
                 provider.onCreateRequest(context);
               }
             },
-            text: provider.riderRequestResponseModel == null
-                ? "Create Request"
-                : "Cancel Request",
+            text: provider.ride == null ? "Create Request" : "Cancel Request",
             isLoading: provider.isRequestCreating,
           ),
         ],

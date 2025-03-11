@@ -62,13 +62,13 @@ class RiderRepository {
     }
   }
 
-  Future<Either<Failure, void>> getActive() async {
+  Future<Either<Failure, Ride>> getActive() async {
     try {
       final response = await _dioWrapper.onGet(
         api: Endpoints.getActiveRider,
       );
 
-      return Right(null);
+      return Right(Ride.fromJson(response.data));
     } catch (e) {
       if (e is Failure) {
         return Left(e);

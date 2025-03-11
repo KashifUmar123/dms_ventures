@@ -14,7 +14,7 @@ class RiderRequestsProvider extends ChangeNotifier {
   final RiderRepository _riderRepository;
   final SocketService _socketService;
   bool isRequestCreating = false;
-  RiderRequestResponseModel? riderRequestResponseModel;
+  Ride? ride;
   RideAcceptResponseModel? rideAcceptResponseModel;
 
   RiderRequestsProvider({
@@ -22,12 +22,18 @@ class RiderRequestsProvider extends ChangeNotifier {
     required SocketService socketService,
   })  : _riderRepository = riderRepository,
         _socketService = socketService {
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
     _identidyAsRider();
+    await Future.delayed(Duration(seconds: 1));
+    getActiveRide();
     listenForEventMessages();
   }
 
   Future<void> onCreateRequest(BuildContext context) async {
-    if (riderRequestResponseModel != null) {
+    if (ride != null) {
       AppUtils.snackBar(context, "You have already created a request");
       return;
     }
@@ -44,7 +50,7 @@ class RiderRequestsProvider extends ChangeNotifier {
     result.fold((left) {
       AppUtils.snackBar(context, left.message, isError: true);
     }, (right) {
-      riderRequestResponseModel = right;
+      ride = right.ride;
       AppUtils.snackBar(context, right.message);
     });
 
@@ -53,12 +59,12 @@ class RiderRequestsProvider extends ChangeNotifier {
   }
 
   Future<void> cancelRequest(BuildContext context) async {
-    if (riderRequestResponseModel == null) {
+    if (ride == null) {
       return;
     }
 
     final result = await _riderRepository.cancelRequest(
-      riderRequestResponseModel?.ride.id,
+      ride?.id,
     );
 
     result.fold(
@@ -66,7 +72,7 @@ class RiderRequestsProvider extends ChangeNotifier {
         AppUtils.snackBar(context, left.message, isError: true);
       },
       (right) {
-        riderRequestResponseModel = null;
+        ride = null;
         AppUtils.snackBar(context, right.message);
       },
     );
@@ -74,13 +80,15 @@ class RiderRequestsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getActiveRider() async {
+  Future<void> getActiveRide() async {
     final result = await _riderRepository.getActive();
     result.fold(
       (left) {
         log(left.message);
       },
-      (right) {},
+      (right) {
+        ride = right;
+      },
     );
 
     notifyListeners();
@@ -90,7 +98,7 @@ class RiderRequestsProvider extends ChangeNotifier {
     BuildContext context = navigatorKey.currentState!.context;
     _socketService.streamController.stream.listen((data) {
       if (data.event == SocketConstants.RIDE_REJECTED) {
-        riderRequestResponseModel = null;
+        ride = null;
         AppUtils.snackBar(
           context,
           "Your request has been rejected",

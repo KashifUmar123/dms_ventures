@@ -5,5 +5,5 @@ class Endpoints {
   static String pickupRider(String id) => '/api/rides/$id/pickup';
   static String completeRide(String id) => '/api/rides/$id/complete';
   static String cancelRide(String id) => '/api/rides/$id/cancel';
-  static String getActiveRider = '/api/rides/active';
+  static String getActiveRider = '/api/rides/active/driver';
 }
