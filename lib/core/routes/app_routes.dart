@@ -2,6 +2,8 @@ import 'package:dms_assement/core/locator/locator.dart';
 import 'package:dms_assement/core/repositories/driver/driver_repository.dart';
 import 'package:dms_assement/core/repositories/rider/rider_repository.dart';
 import 'package:dms_assement/core/services/socket_service.dart';
+import 'package:dms_assement/features/commons/map_screen/map_screen.dart';
+import 'package:dms_assement/features/commons/map_screen/map_screen_provider.dart';
 import 'package:dms_assement/features/driver/driver_request/driver_requests_provider.dart';
 import 'package:dms_assement/features/driver/driver_request/driver_requests_screen.dart';
 import 'package:dms_assement/features/rider/rider_requests/rider_requests_provider.dart';
@@ -16,6 +18,7 @@ class RouteNames {
   static const String home = '/home';
   static const String riderRequests = '/rider-requests';
   static const String driverRequests = '/driver-requests';
+  static const String mapScreen = '/map-screen';
 }
 
 Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -50,6 +53,16 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
               socketService: locator.get<SocketService>(),
             ),
             child: DriverRequestsScreen(),
+          );
+        },
+      );
+
+    case RouteNames.mapScreen:
+      return MaterialPageRoute(
+        builder: (_) {
+          return ChangeNotifierProvider(
+            create: (_) => MapScreenProvider(),
+            child: MapScreen(),
           );
         },
       );

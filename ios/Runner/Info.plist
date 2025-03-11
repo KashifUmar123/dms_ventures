@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>MGLMapboxAccessToken</key>
+	<string>sk.eyJ1IjoiZGlnaXRhbGFzc2V0cyIsImEiOiJjbTducGQ0Y3YwM2U1Mm1zNWFmamJpb2d1In0.AvaN4pXNYIXxvz9ftZ6J8Q</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>For Location sharing when the ride is actie between driver and rider</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

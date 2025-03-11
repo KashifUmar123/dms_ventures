@@ -1,4 +1,5 @@
 import 'package:dms_assement/core/extensions/context_extension.dart';
+import 'package:dms_assement/core/routes/app_routes.dart';
 import 'package:dms_assement/core/widgets/custom_button.dart';
 import 'package:dms_assement/features/rider/rider_requests/rider_requests_provider.dart';
 import 'package:flutter/material.dart';
@@ -81,6 +82,13 @@ class RiderRequestsScreen extends StatelessWidget {
             },
             text: provider.ride == null ? "Create Request" : "Cancel Request",
             isLoading: provider.isRequestCreating,
+          ),
+          SizedBox(height: 10),
+          CustomButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(RouteNames.mapScreen);
+            },
+            text: "Go to Map",
           ),
         ],
       ),

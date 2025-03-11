@@ -1,10 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'dart:developer';
 import 'package:dms_assement/core/constants/socket_constants.dart';
 import 'package:dms_assement/core/models/rider_request_model.dart';
 import 'package:dms_assement/core/models/rider_request_response_model.dart';
 import 'package:dms_assement/core/repositories/rider/rider_repository.dart';
+import 'package:dms_assement/core/routes/app_routes.dart';
 import 'package:dms_assement/core/services/socket_service.dart';
 import 'package:dms_assement/core/utils/app_utils.dart';
 import 'package:dms_assement/main.dart';
@@ -88,10 +88,12 @@ class RiderRequestsProvider extends ChangeNotifier {
       },
       (right) {
         ride = right;
+        notifyListeners();
+        navigatorKey.currentState!.pushNamed(
+          RouteNames.mapScreen,
+        );
       },
     );
-
-    notifyListeners();
   }
 
   void listenForEventMessages() {
@@ -111,7 +113,9 @@ class RiderRequestsProvider extends ChangeNotifier {
         AppUtils.snackBar(context, "Your request has been accepted");
         rideAcceptResponseModel = RideAcceptResponseModel.fromJson(data.data);
         notifyListeners();
-        // TODO: navigate to the driver screen
+        navigatorKey.currentState!.pushNamed(
+          RouteNames.mapScreen,
+        );
       }
     });
   }
