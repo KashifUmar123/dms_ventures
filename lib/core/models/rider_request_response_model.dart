@@ -25,6 +25,9 @@ class Ride {
   final CustomLatlong dropoffLocation;
   final String status;
   final String requestTime;
+  final String driverId;
+  final String driverName;
+  final String acceptTime;
 
   Ride({
     required this.id,
@@ -34,6 +37,9 @@ class Ride {
     required this.dropoffLocation,
     required this.status,
     required this.requestTime,
+    this.driverId = "",
+    this.driverName = "",
+    this.acceptTime = "",
   });
 
   factory Ride.fromJson(Map<String, dynamic> json) {
@@ -45,6 +51,47 @@ class Ride {
       dropoffLocation: CustomLatlong.fromJson(json['dropoffLocation']),
       status: json['status'] ?? "",
       requestTime: json['requestTime'] ?? "",
+      driverId: json['driverId'] ?? "",
+      driverName: json['driverName'] ?? "",
+      acceptTime: json['acceptTime'] ?? "",
+    );
+  }
+}
+
+class DriverModel {
+  final String userId;
+  final String name;
+  final CustomLatlong location;
+
+  DriverModel({
+    required this.userId,
+    required this.name,
+    required this.location,
+  });
+
+  factory DriverModel.fromJson(Map<String, dynamic> json) {
+    return DriverModel(
+      userId: json['userId'] ?? "",
+      name: json['name'] ?? "",
+      location: CustomLatlong.fromJson(json['location']),
+    );
+  }
+}
+
+class RideAcceptResponseModel {
+  final Ride? ride;
+  final DriverModel? driver;
+
+  RideAcceptResponseModel({
+    this.ride,
+    this.driver,
+  });
+
+  factory RideAcceptResponseModel.fromJson(Map<String, dynamic> json) {
+    return RideAcceptResponseModel(
+      ride: json['ride'] != null ? Ride.fromJson(json['ride']) : null,
+      driver:
+          json['driver'] != null ? DriverModel.fromJson(json['driver']) : null,
     );
   }
 }

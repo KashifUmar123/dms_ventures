@@ -4,6 +4,8 @@ import 'package:dms_assement/core/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupLocator();
@@ -24,6 +26,7 @@ class DMSVenturesApp extends StatelessWidget {
       child: Consumer<UserProvider>(
         builder: (_, value, __) {
           return MaterialApp(
+            navigatorKey: navigatorKey,
             title: 'DMS Ventures',
             theme: ThemeData(
               primarySwatch: Colors.blue,

@@ -35,6 +35,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
           return ChangeNotifierProvider(
             create: (_) => RiderRequestsProvider(
               riderRepository: locator.get<RiderRepository>(),
+              socketService: locator.get<SocketService>(),
             ),
             child: RiderRequestsScreen(),
           );

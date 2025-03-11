@@ -47,6 +47,7 @@ class SocketConstants {
   // SERVER TO CLIENT
   static const String RIDE_REQUEST = 'rideRequest';
   static const String RIDE_ACCEPTED = 'rideAccepted';
+  static const String RIDE_REJECTED = 'rideRejected';
   static const String RIDE_PICKED_UP = 'ridePickedUp';
   static const String RIDE_COMPLETED = 'rideCompleted';
   static const String RIDE_CANCELLED = 'rideCancelled';

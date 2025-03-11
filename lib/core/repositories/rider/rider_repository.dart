@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dartz/dartz.dart';
 import 'package:dms_assement/core/constants/endpoints.dart';
 import 'package:dms_assement/core/models/rider_request_model.dart';
@@ -64,7 +62,7 @@ class RiderRepository {
     }
   }
 
-  Future<Either<Failure, void>> getActiveRider() async {
+  Future<Either<Failure, void>> getActive() async {
     try {
       final response = await _dioWrapper.onGet(
         api: Endpoints.getActiveRider,
