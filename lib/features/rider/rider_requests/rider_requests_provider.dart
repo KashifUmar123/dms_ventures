@@ -64,7 +64,7 @@ class RiderRequestsProvider extends ChangeNotifier {
     }
 
     final result = await _riderRepository.cancelRequest(
-      ride?.id,
+      ride?.riderId,
     );
 
     result.fold(
@@ -89,16 +89,17 @@ class RiderRequestsProvider extends ChangeNotifier {
       (right) {
         ride = right;
         notifyListeners();
-        navigatorKey.currentState!.pushNamed(
-          RouteNames.mapScreen,
-        );
+        // navigatorKey.currentState!.pushNamed(
+        //   RouteNames.riderMap,
+        //   arguments: ride,
+        // );
       },
     );
   }
 
   void listenForEventMessages() {
     BuildContext context = navigatorKey.currentState!.context;
-    _socketService.streamController.stream.listen((data) {
+    _socketService.streamController.stream.listen((data) async {
       if (data.event == SocketConstants.RIDE_REJECTED) {
         ride = null;
         AppUtils.snackBar(
@@ -113,9 +114,25 @@ class RiderRequestsProvider extends ChangeNotifier {
         AppUtils.snackBar(context, "Your request has been accepted");
         rideAcceptResponseModel = RideAcceptResponseModel.fromJson(data.data);
         notifyListeners();
-        navigatorKey.currentState!.pushNamed(
-          RouteNames.mapScreen,
+        var result = await navigatorKey.currentState!.pushNamed(
+          RouteNames.riderMap,
+          arguments: rideAcceptResponseModel,
         );
+
+        if (result != null && result == true) {
+          ride = null;
+          notifyListeners();
+        }
+      }
+
+      if (data.event == SocketConstants.RIDE_CANCELLED) {
+        AppUtils.snackBar(
+          context,
+          "Your ride has been cancelled",
+          isError: true,
+        );
+        ride = null;
+        notifyListeners();
       }
     });
   }

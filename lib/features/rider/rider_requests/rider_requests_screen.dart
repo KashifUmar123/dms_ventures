@@ -50,7 +50,6 @@ class RiderRequestsScreen extends StatelessWidget {
     RiderRequestsProvider provider,
   ) {
     return Container(
-      height: context.height * .2,
       width: context.width,
       padding: EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
@@ -90,6 +89,7 @@ class RiderRequestsScreen extends StatelessWidget {
             },
             text: "Go to Map",
           ),
+          SizedBox(height: context.paddingBottom),
         ],
       ),
     );

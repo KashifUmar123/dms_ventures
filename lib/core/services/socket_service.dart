@@ -8,6 +8,7 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 class SocketService {
   late io.Socket _socket;
   late StreamController<SocketMessageModel> streamController;
+  late StreamController<bool> reconnectController;
 
   void connect({
     String url = AppConstatns.baseUrl,
@@ -16,6 +17,7 @@ class SocketService {
     Function(dynamic)? onError,
   }) {
     streamController = StreamController.broadcast();
+    reconnectController = StreamController.broadcast();
     _socket = io.io(url, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': true,
@@ -36,6 +38,11 @@ class SocketService {
       onError?.call(error);
     });
 
+    _socket.onReconnect((data) {
+      debugPrint('Socket reconnected');
+      reconnectController.add(true);
+    });
+
     _socket.onAny((String event, dynamic data) {
       log('Event: $event: Data: $data');
       streamController.add(
@@ -51,15 +58,9 @@ class SocketService {
     _socket.emit(eventName, data);
   }
 
-  // void listenForMessages(Function(dynamic) callback) {
-  //   _socket.on(SocketConstants.RIDE_REQUEST, (data) {
-  //     log('Ride request: $data');
-  //     callback.call(data);
-  //   });
-  // }
-
   void disconnect() {
     streamController.close();
+    reconnectController.close();
     _socket.disconnect();
   }
 }

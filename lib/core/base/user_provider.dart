@@ -1,8 +1,11 @@
+import 'package:dms_assement/core/locator/locator.dart';
+import 'package:dms_assement/core/services/socket_service.dart';
 import 'package:flutter/material.dart';
 
 enum UserType { rider, driver, none }
 
 class UserProvider extends ChangeNotifier {
+  final SocketService _socketService = locator.get<SocketService>();
   UserType _userType = UserType.none;
 
   UserType get userType => _userType;
@@ -12,33 +15,17 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void showUserTypeDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Select User Type'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: Text('Rider'),
-                onTap: () {
-                  setUserType(UserType.rider);
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: Text('Driver'),
-                onTap: () {
-                  setUserType(UserType.driver);
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
+  UserProvider() {
+    _socketService.reconnectController.stream.listen((data) {
+      if (_userType != UserType.none) {
+        _socketService.sendMessage(
+          eventName: 'identify',
+          data: {
+            "userType": _userType.name,
+            "location": {"latitude": 33.613972, "longitude": 73.170286}
+          },
         );
-      },
-    );
+      }
+    });
   }
 }
