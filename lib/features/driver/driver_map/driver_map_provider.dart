@@ -28,6 +28,8 @@ class DriverMapProvider extends ChangeNotifier {
   bool showPickUpButton = false;
   bool showCompleteButton = false;
 
+  bool loopShouldBreak = false;
+
   // markers
   PointAnnotation? driverMarker;
   PointAnnotation? riderMarker;
@@ -42,6 +44,10 @@ class DriverMapProvider extends ChangeNotifier {
     VoidCallback? callback,
   }) async {
     for (int i = 0; i < routeCoordinates.length; i++) {
+      if (loopShouldBreak) {
+        loopShouldBreak = false;
+        break;
+      }
       mapboxMap?.flyTo(
         CameraOptions(
           zoom: 15,
@@ -95,6 +101,8 @@ class DriverMapProvider extends ChangeNotifier {
       } else if (data.event == SocketConstants.RIDE_CANCELLED) {
         log("Ride Cancelled");
         await mapboxMap?.removeRoute();
+        await Future.delayed(Duration(seconds: 2));
+        mapboxMap?.dispose();
         navigatorKey.currentState?.pop();
       } else if (data.event == SocketConstants.RIDE_COMPLETED) {
         log("Ride Completed");
@@ -340,8 +348,11 @@ class DriverMapProvider extends ChangeNotifier {
       (left) {
         AppUtils.snackBar(context, left.message, isError: true);
       },
-      (right) {
+      (right) async {
         AppUtils.snackBar(context, "Ride Completed");
+        loopShouldBreak = true;
+        await Future.delayed(Duration(seconds: 2));
+        mapboxMap?.dispose();
         navigatorKey.currentState?.pop();
       },
     );

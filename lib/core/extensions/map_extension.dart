@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 extension MapExtension on MapboxMap {
-  void drawRoute(
+  Future<void> drawRoute(
     List<Position> route, {
     String lineId = 'route-layer',
     String geoJsonId = 'route-source',

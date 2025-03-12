@@ -24,6 +24,13 @@ class RiderMapProvider extends ChangeNotifier {
   StreamSubscription? _positionStreamSubscription;
   bool isCancelling = false;
   RideAcceptResponseModel? ride;
+  bool showCancelRideButton = true;
+
+  // markers
+  PointAnnotation? driverMarker;
+  PointAnnotation? riderMarker;
+
+  late PointAnnotationManager pointAnnotationManager;
 
   RiderMapProvider({this.ride}) {
     _listenToEventMessages();
@@ -34,20 +41,51 @@ class RiderMapProvider extends ChangeNotifier {
       if (data.event == SocketConstants.RIDE_PICKED_UP) {
         log("Ride Picked Up");
         await mapboxMap?.removeRoute();
+
         createRouteBetweenPickAndDrop();
+        showCancelRideButton = false;
+        notifyListeners();
       } else if (data.event == SocketConstants.RIDE_CANCELLED) {
         log("Ride Cancelled");
         await mapboxMap?.removeRoute();
-        navigatorKey.currentState?.pop();
+        await Future.delayed(Duration(seconds: 2));
+        mapboxMap?.dispose();
+        Navigator.of(navigatorKey.currentState!.context).pop();
       } else if (data.event == SocketConstants.RIDE_COMPLETED) {
         log("Ride Completed");
         await mapboxMap?.removeRoute();
+        await Future.delayed(Duration(seconds: 2));
+        mapboxMap?.dispose();
         navigatorKey.currentState?.pop();
         AppUtils.snackBar(navigatorKey.currentState!.context, "Ride Completed");
       }
 
       if (data.event == SocketConstants.DRIVER_LOCATION_UPDATE) {
-        print("Driver Location Update");
+        debugPrint("Driver Location Update: ${data.data}");
+
+        if (mapboxMap == null || driverMarker == null) return;
+
+        driverMarker = await mapboxMap!.updateMarker(
+          driverMarker!,
+          pointAnnotationManager: pointAnnotationManager,
+          position: Position(
+            data.data['location']['longitude'],
+            data.data['location']['latitude'],
+          ),
+        );
+
+        mapboxMap?.flyTo(
+          CameraOptions(
+            zoom: 15,
+            center: Point(
+              coordinates: Position(
+                data.data['location']['longitude'],
+                data.data['location']['latitude'],
+              ),
+            ),
+          ),
+          MapAnimationOptions(duration: 1000, startDelay: 0),
+        );
       }
     });
   }
@@ -71,9 +109,25 @@ class RiderMapProvider extends ChangeNotifier {
       );
 
       // Draw the route on the map
-      mapboxMap?.drawRoute(route);
+      await mapboxMap?.drawRoute(route);
+
+      driverMarker = await mapboxMap!.addMarkerImage(
+        Position(
+          ride!.driver!.location.longitude,
+          ride!.driver!.location.latitude,
+        ),
+        pointAnnotationManager: pointAnnotationManager,
+      );
+
+      riderMarker = await mapboxMap!.addMarkerImage(
+        Position(
+          ride!.ride!.pickupLocation.longitude,
+          ride!.ride!.pickupLocation.latitude,
+        ),
+        pointAnnotationManager: pointAnnotationManager,
+      );
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint("ERROR DRWING ROUTE: $e");
     }
   }
 
@@ -96,7 +150,23 @@ class RiderMapProvider extends ChangeNotifier {
       );
 
       // Draw the route on the map
-      mapboxMap?.drawRoute(route);
+      await mapboxMap?.drawRoute(route);
+
+      riderMarker = await mapboxMap!.addMarkerImage(
+        Position(
+          ride!.ride!.dropoffLocation.longitude,
+          ride!.ride!.dropoffLocation.latitude,
+        ),
+        pointAnnotationManager: pointAnnotationManager,
+      );
+
+      driverMarker = await mapboxMap!.addMarkerImage(
+        Position(
+          ride!.ride!.pickupLocation.longitude,
+          ride!.ride!.pickupLocation.latitude,
+        ),
+        pointAnnotationManager: pointAnnotationManager,
+      );
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -108,6 +178,9 @@ class RiderMapProvider extends ChangeNotifier {
       enabled: true,
       pulsingEnabled: true,
     ));
+
+    pointAnnotationManager =
+        await mapboxMap!.annotations.createPointAnnotationManager();
 
     _askPermissions(() {
       // Check if the rider status is picked up, then no need to listen to the changes.
@@ -134,6 +207,7 @@ class RiderMapProvider extends ChangeNotifier {
     } else if (permission == gl.LocationPermission.denied) {
       await gl.Geolocator.requestPermission();
     } else {
+      print("PERMISSIONS GRANTED");
       callback();
     }
   }

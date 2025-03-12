@@ -32,10 +32,11 @@ class RiderMapScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                Positioned(
-                  bottom: 0,
-                  child: _buildCancelRiderWidget(context, provider),
-                ),
+                if (provider.showCancelRideButton)
+                  Positioned(
+                    bottom: 0,
+                    child: _buildCancelRiderWidget(context, provider),
+                  ),
               ],
             ),
           ),
