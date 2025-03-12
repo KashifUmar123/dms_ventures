@@ -4,8 +4,10 @@ import 'package:dms_assement/core/locator/locator.dart';
 import 'package:dms_assement/core/models/rider_request_response_model.dart';
 import 'package:dms_assement/core/repositories/driver/driver_repository.dart';
 import 'package:dms_assement/core/repositories/rider/rider_repository.dart';
+import 'package:dms_assement/core/routes/app_routes.dart';
 import 'package:dms_assement/core/services/socket_service.dart';
 import 'package:dms_assement/core/utils/app_utils.dart';
+import 'package:dms_assement/main.dart';
 import 'package:flutter/material.dart';
 
 class DriverRequestsProvider extends ChangeNotifier {
@@ -32,9 +34,7 @@ class DriverRequestsProvider extends ChangeNotifier {
       if (data.event == SocketConstants.RIDE_REQUEST) {
         requests = [Ride.fromJson(data.data)];
         notifyListeners();
-      }
-
-      if (data.event == SocketConstants.RIDE_CANCELLED) {
+      } else if (data.event == SocketConstants.RIDE_CANCELLED) {
         requests = [];
         notifyListeners();
       }
@@ -56,9 +56,14 @@ class DriverRequestsProvider extends ChangeNotifier {
     result.fold((left) {
       AppUtils.snackBar(context, left.message, isError: true);
     }, (right) {
+      Ride firstRide = requests.first;
       requests = [];
       notifyListeners();
       AppUtils.snackBar(context, "Ride accepted successfully");
+      navigatorKey.currentState?.pushNamed(
+        RouteNames.driverMap,
+        arguments: firstRide,
+      );
     });
   }
 

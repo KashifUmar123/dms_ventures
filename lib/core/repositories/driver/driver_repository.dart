@@ -46,6 +46,36 @@ class DriverRepository {
     }
   }
 
+  Future<Either<Failure, bool>> pickupRider({
+    required String id,
+  }) async {
+    try {
+      await _dioWrapper.onPost(api: Endpoints.pickupRider(id), data: {});
+      return Right(true);
+    } catch (e) {
+      if (e is Failure) {
+        return Left(e);
+      } else {
+        return Left(CustomFailure("Something went wrong"));
+      }
+    }
+  }
+
+  Future<Either<Failure, bool>> completeRide({
+    required String id,
+  }) async {
+    try {
+      await _dioWrapper.onPost(api: Endpoints.completeRide(id), data: {});
+      return Right(true);
+    } catch (e) {
+      if (e is Failure) {
+        return Left(e);
+      } else {
+        return Left(CustomFailure("Something went wrong"));
+      }
+    }
+  }
+
   void sendMessage({
     required String eventName,
     required Map<String, dynamic> data,

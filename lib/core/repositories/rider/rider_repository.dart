@@ -40,12 +40,15 @@ class RiderRepository {
     }
   }
 
-  Future<Either<Failure, RiderRequestResponseModel>> cancelRequest(id) async {
+  Future<Either<Failure, RiderRequestResponseModel>> cancelRequest(
+    id, {
+    String userType = "rider",
+  }) async {
     try {
       final response = await _dioWrapper.onPost(
         api: Endpoints.cancelRide(id),
         data: {
-          "userType": "rider",
+          "userType": userType,
         },
       );
 

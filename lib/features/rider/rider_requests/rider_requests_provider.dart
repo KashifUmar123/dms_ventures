@@ -134,6 +134,16 @@ class RiderRequestsProvider extends ChangeNotifier {
         ride = null;
         notifyListeners();
       }
+
+      if (data.event == SocketConstants.RIDE_COMPLETED) {
+        AppUtils.snackBar(
+          context,
+          "Your ride has been cancelled",
+          isError: true,
+        );
+        ride = null;
+        notifyListeners();
+      }
     });
   }
 

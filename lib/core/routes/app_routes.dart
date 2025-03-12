@@ -5,6 +5,8 @@ import 'package:dms_assement/core/repositories/rider/rider_repository.dart';
 import 'package:dms_assement/core/services/socket_service.dart';
 import 'package:dms_assement/features/commons/map_screen/map_screen.dart';
 import 'package:dms_assement/features/commons/map_screen/map_screen_provider.dart';
+import 'package:dms_assement/features/driver/driver_map/driver_map_provider.dart';
+import 'package:dms_assement/features/driver/driver_map/driver_map_screen.dart';
 import 'package:dms_assement/features/driver/driver_request/driver_requests_provider.dart';
 import 'package:dms_assement/features/driver/driver_request/driver_requests_screen.dart';
 import 'package:dms_assement/features/rider/rider_map/rider_map_provider.dart';
@@ -23,7 +25,7 @@ class RouteNames {
   static const String driverRequests = '/driver-requests';
   static const String mapScreen = '/map-screen';
   static const String riderMap = '/rider-map-screen';
-  static const String driverMap = '/rider-map-screen';
+  static const String driverMap = '/driver-map-screen';
 }
 
 Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -83,6 +85,21 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
           return ChangeNotifierProvider(
             create: (_) => RiderMapProvider(ride: args),
             child: RiderMapScreen(),
+          );
+        },
+      );
+    case RouteNames.driverMap:
+      return MaterialPageRoute(
+        builder: (_) {
+          Ride? args;
+
+          if (settings.arguments != null) {
+            args = settings.arguments as Ride;
+          }
+
+          return ChangeNotifierProvider(
+            create: (_) => DriverMapProvider(ride: args),
+            child: DriverMapScreen(),
           );
         },
       );

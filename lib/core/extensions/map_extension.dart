@@ -1,7 +1,9 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:convert';
+import 'package:dms_assement/core/constants/app_constatns.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 extension MapExtension on MapboxMap {
@@ -34,7 +36,7 @@ extension MapExtension on MapboxMap {
         LineLayer(
           id: lineId,
           sourceId: geoJsonId,
-          lineColor: Colors.red.value,
+          lineColor: Colors.green.value,
           lineWidth: 5.0,
           lineOpacity: 1.0,
         ),
@@ -57,6 +59,59 @@ extension MapExtension on MapboxMap {
       debugPrint('Route source and layer removed successfully.');
     } catch (e) {
       debugPrint(e.toString());
+    }
+  }
+
+  Future<PointAnnotation> addMarkerImage(
+    Position position, {
+    required PointAnnotationManager pointAnnotationManager,
+  }) async {
+    // Load the image from assets
+    final ByteData bytes = await rootBundle.load(AppConstatns.markerIcon);
+    final Uint8List imageData = bytes.buffer.asUint8List();
+
+    // Create a PointAnnotationOptions
+    PointAnnotationOptions pointAnnotationOptions = PointAnnotationOptions(
+      geometry: Point(coordinates: position),
+      image: imageData,
+      iconSize: .25,
+    );
+
+    // Add the annotation to the map
+    return await pointAnnotationManager.create(pointAnnotationOptions);
+  }
+
+  // remove markers
+  Future<void> removeMarker(
+    PointAnnotation marker, {
+    required PointAnnotationManager pointAnnotationManager,
+  }) async {
+    try {
+      await pointAnnotationManager.delete(marker);
+      debugPrint('Marker removed successfully.');
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<PointAnnotation> updateMarker(
+    PointAnnotation marker, {
+    required PointAnnotationManager pointAnnotationManager,
+    required Position position,
+  }) async {
+    try {
+      await removeMarker(
+        marker,
+        pointAnnotationManager: pointAnnotationManager,
+      );
+
+      return await addMarkerImage(
+        position,
+        pointAnnotationManager: pointAnnotationManager,
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+      return marker;
     }
   }
 }
