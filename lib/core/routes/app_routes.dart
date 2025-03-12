@@ -3,8 +3,6 @@ import 'package:dms_assement/core/models/rider_request_response_model.dart';
 import 'package:dms_assement/core/repositories/driver/driver_repository.dart';
 import 'package:dms_assement/core/repositories/rider/rider_repository.dart';
 import 'package:dms_assement/core/services/socket_service.dart';
-import 'package:dms_assement/features/commons/map_screen/map_screen.dart';
-import 'package:dms_assement/features/commons/map_screen/map_screen_provider.dart';
 import 'package:dms_assement/features/driver/driver_map/driver_map_provider.dart';
 import 'package:dms_assement/features/driver/driver_map/driver_map_screen.dart';
 import 'package:dms_assement/features/driver/driver_request/driver_requests_provider.dart';
@@ -64,15 +62,6 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
         },
       );
 
-    case RouteNames.mapScreen:
-      return MaterialPageRoute(
-        builder: (_) {
-          return ChangeNotifierProvider(
-            create: (_) => MapScreenProvider(),
-            child: MapScreen(),
-          );
-        },
-      );
     case RouteNames.riderMap:
       return MaterialPageRoute(
         builder: (_) {
