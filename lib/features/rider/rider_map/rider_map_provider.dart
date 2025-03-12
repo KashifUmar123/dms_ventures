@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:dms_assement/core/constants/socket_constants.dart';
 import 'package:dms_assement/core/extensions/map_extension.dart';
-import 'package:dms_assement/core/locator/locator.dart';
 import 'package:dms_assement/core/models/rider_request_response_model.dart';
 import 'package:dms_assement/core/repositories/rider/rider_repository.dart';
 import 'package:dms_assement/core/services/direction_service.dart';
@@ -18,9 +17,21 @@ import 'package:geolocator/geolocator.dart' as gl;
 
 class RiderMapProvider extends ChangeNotifier {
   MapboxMap? mapboxMap;
-  final DirectionService _directionService = locator.get<DirectionService>();
-  final SocketService _socketService = locator.get<SocketService>();
-  final RiderRepository _riderRepository = locator.get<RiderRepository>();
+  final DirectionService _directionService;
+  final SocketService _socketService;
+  final RiderRepository _riderRepository;
+
+  RiderMapProvider({
+    this.ride,
+    required DirectionService directionService,
+    required SocketService socketService,
+    required RiderRepository riderRepository,
+  })  : _directionService = directionService,
+        _socketService = socketService,
+        _riderRepository = riderRepository {
+    _listenToEventMessages();
+  }
+
   StreamSubscription? _positionStreamSubscription;
   bool isCancelling = false;
   RideAcceptResponseModel? ride;
@@ -31,10 +42,6 @@ class RiderMapProvider extends ChangeNotifier {
   PointAnnotation? riderMarker;
 
   late PointAnnotationManager pointAnnotationManager;
-
-  RiderMapProvider({this.ride}) {
-    _listenToEventMessages();
-  }
 
   void _listenToEventMessages() {
     _socketService.streamController.stream.listen((data) async {

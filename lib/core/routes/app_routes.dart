@@ -2,6 +2,7 @@ import 'package:dms_assement/core/locator/locator.dart';
 import 'package:dms_assement/core/models/rider_request_response_model.dart';
 import 'package:dms_assement/core/repositories/driver/driver_repository.dart';
 import 'package:dms_assement/core/repositories/rider/rider_repository.dart';
+import 'package:dms_assement/core/services/direction_service.dart';
 import 'package:dms_assement/core/services/socket_service.dart';
 import 'package:dms_assement/features/driver/driver_map/driver_map_provider.dart';
 import 'package:dms_assement/features/driver/driver_map/driver_map_screen.dart';
@@ -72,7 +73,12 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
           }
 
           return ChangeNotifierProvider(
-            create: (_) => RiderMapProvider(ride: args),
+            create: (_) => RiderMapProvider(
+              ride: args,
+              socketService: locator.get<SocketService>(),
+              directionService: locator.get<DirectionService>(),
+              riderRepository: locator.get<RiderRepository>(),
+            ),
             child: RiderMapScreen(),
           );
         },
@@ -87,7 +93,13 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
           }
 
           return ChangeNotifierProvider(
-            create: (_) => DriverMapProvider(ride: args),
+            create: (_) => DriverMapProvider(
+              ride: args,
+              socketService: locator.get<SocketService>(),
+              directionService: locator.get<DirectionService>(),
+              riderRepository: locator.get<RiderRepository>(),
+              driverRepository: locator.get<DriverRepository>(),
+            ),
             child: DriverMapScreen(),
           );
         },

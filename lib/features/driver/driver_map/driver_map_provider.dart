@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:dms_assement/core/constants/socket_constants.dart';
 import 'package:dms_assement/core/extensions/map_extension.dart';
-import 'package:dms_assement/core/locator/locator.dart';
 import 'package:dms_assement/core/models/rider_request_response_model.dart';
 import 'package:dms_assement/core/repositories/driver/driver_repository.dart';
 import 'package:dms_assement/core/repositories/rider/rider_repository.dart';
@@ -17,17 +16,30 @@ import 'package:permission_handler/permission_handler.dart';
 
 class DriverMapProvider extends ChangeNotifier {
   MapboxMap? mapboxMap;
-  final DirectionService _directionService = locator.get<DirectionService>();
-  final SocketService _socketService = locator.get<SocketService>();
-  final RiderRepository _riderRepository = locator.get<RiderRepository>();
-  final DriverRepository _driverRepository = locator.get<DriverRepository>();
+  final DirectionService _directionService;
+  final SocketService _socketService;
+  final RiderRepository _riderRepository;
+  final DriverRepository _driverRepository;
+
+  DriverMapProvider({
+    this.ride,
+    required DirectionService directionService,
+    required SocketService socketService,
+    required RiderRepository riderRepository,
+    required DriverRepository driverRepository,
+  })  : _directionService = directionService,
+        _socketService = socketService,
+        _riderRepository = riderRepository,
+        _driverRepository = driverRepository {
+    _listenToEventMessages();
+  }
+
   StreamSubscription? _positionStreamSubscription;
   bool isCancelling = false;
   Ride? ride;
   List<Position> routeCoordinates = [];
   bool showPickUpButton = false;
   bool showCompleteButton = false;
-
   bool loopShouldBreak = false;
 
   // markers
@@ -35,10 +47,6 @@ class DriverMapProvider extends ChangeNotifier {
   PointAnnotation? riderMarker;
 
   late PointAnnotationManager pointAnnotationManager;
-
-  DriverMapProvider({this.ride}) {
-    _listenToEventMessages();
-  }
 
   void mimicLocationChanges({
     VoidCallback? callback,
