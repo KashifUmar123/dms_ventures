@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:dms_assement/core/constants/app_constatns.dart';
+import 'package:dms_assement/core/locator/locator.dart';
 import 'package:dms_assement/core/models/socket_message_model.dart';
+import 'package:dms_assement/core/services/env_service.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
@@ -11,14 +12,13 @@ class SocketService {
   late StreamController<bool> reconnectController;
 
   void connect({
-    String url = AppConstatns.baseUrl,
     Function(dynamic)? onConnect,
     Function(dynamic)? onDisconnect,
     Function(dynamic)? onError,
   }) {
     streamController = StreamController.broadcast();
     reconnectController = StreamController.broadcast();
-    _socket = io.io(url, <String, dynamic>{
+    _socket = io.io(locator.get<EnvService>().baseURL, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': true,
     });
