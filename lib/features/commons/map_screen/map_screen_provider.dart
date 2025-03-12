@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 import 'dart:convert';
 import 'package:dms_assement/core/locator/locator.dart';
@@ -28,15 +30,12 @@ class MapScreenProvider extends ChangeNotifier {
     var status = await Permission.location.request();
 
     if (status.isGranted) {
-      // Permission granted, proceed with your logic
-      print("Location permission granted");
+      debugPrint("Location permission granted");
       checkGeoLocatorPersmissions();
     } else if (status.isDenied) {
-      // Permission denied, handle accordingly
-      print("Location permission denied");
+      debugPrint("Location permission denied");
     } else if (status.isPermanentlyDenied) {
-      print("Location permission permanently denied");
-      // Permission permanently denied, open app settings
+      debugPrint("Location permission permanently denied");
       openAppSettings();
     }
   }

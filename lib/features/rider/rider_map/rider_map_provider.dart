@@ -207,12 +207,12 @@ class RiderMapProvider extends ChangeNotifier {
     } else if (permission == gl.LocationPermission.denied) {
       await gl.Geolocator.requestPermission();
     } else {
-      print("PERMISSIONS GRANTED");
+      debugPrint("PERMISSIONS GRANTED");
       callback();
     }
   }
 
-  void _listenToPositionChanges() {
+  void listenToPositionChanges() {
     gl.LocationSettings locationSettings = gl.LocationSettings(
       accuracy: gl.LocationAccuracy.high,
       distanceFilter: 10,

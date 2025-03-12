@@ -1,5 +1,4 @@
 import 'package:dms_assement/core/extensions/context_extension.dart';
-import 'package:dms_assement/core/extensions/map_extension.dart';
 import 'package:dms_assement/core/widgets/custom_button.dart';
 import 'package:dms_assement/features/rider/rider_map/rider_map_provider.dart';
 import 'package:flutter/material.dart';
